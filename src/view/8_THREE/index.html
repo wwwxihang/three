@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="format-detection" content="email=no">
+        <title>three.js css3d - panorama</title>
+        <style>
+            body {
+                background-color: #000000;
+                margin: 0;
+                padding: 0;
+                line-height: 0;
+                cursor: move;
+                overflow: hidden;
+            }
+
+            a {
+                color: #ffffff;
+            }
+
+            #info {
+                position: absolute;
+                width: 100%;
+                color: #ffffff;
+                padding: 5px;
+                font-family: Monospace;
+                font-size: 13px;
+                font-weight: bold;
+                text-align: center;
+                z-index: 1;
+                
+            }
+            .alert{
+                position: fixed;
+                width: 90%;
+                z-index: 100;
+                left: 0;
+                right: 0;
+                margin: 200% auto;
+                opacity: 0;
+                transition: 2s;
+                -moz-transition: 2s; /* Firefox 4 */
+                -webkit-transition: 2s; /* Safari 和 Chrome */
+                -o-transition: 2s; /* Opera */
+            }
+            .alert.show{
+                margin: 20% auto;
+                opacity:1;
+            }
+            .button{
+                position: fixed;
+                right: 10px;
+                bottom: 20px;
+                width: 80px;
+                height: 30px;
+                z-index: 10;
+                background: #ccc;
+                line-height: 20px;
+            }
+            .car{
+                position: absolute;
+                left: 40%;
+                top: 61%;
+            }
+        </style>
+    </head>
+    <body>
+        <img class="alert" id="alert" src="./img/t/1q.png"/>
+        <button class="button" id="button" tyle="button" onclick="change()">开启</button>
+        <!-- // <script src="./qq.js"></script> -->
+        <script src="./three.js"></script>
+        <script src="./CSS3DRenderer.js"></script>
+        <script src="./DeviceOrientationControls.js"></script>
+
+        <script>
+
+            var camera, scene, renderer;
+            var geometry, material, mesh;
+            var target = new THREE.Vector3();
+
+            var lon = 90, lat = 0;
+            var phi = 0, theta = 0;
+
+            var touchX, touchY;
+
+            init();
+            animate();
+
+            function init() {
+                //相机px
+                camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 1000 );
+                camera.lookAt({
+                    x: 0,
+                    y: 0,
+                    z: 0
+                });
+                //设置场景
+                scene = new THREE.Scene();
+
+                var sides = [
+                        //1
+                    {
+                        url: './img/c/c_cube_0.png',
+                        position: [ 512, 0, 0 ],
+                        rotation: [ 0, -Math.PI / 2, 0 ]
+                    },
+                        //2
+                    {
+                        url: './img/c/c_cube_1.png',
+                        position: [ 0, 0,  512 ],
+                        rotation: [ 0, Math.PI, 0 ]
+                    },
+                        //3
+                    {
+                        url: './img/c/c_cube_2.png',
+                        position: [ -512, 0, 0 ],
+                        rotation: [ 0, Math.PI / 2, 0 ]
+                    },
+                        //4
+                    {
+                        url: './img/c/c_cube_3.png',
+                        position: [ 0, 0, -512 ],
+                        rotation: [ 0, 0, 0 ]
+                    },
+                    {
+                        //上
+                        url: './img/c/c_cube_4.png',
+                        position: [ 0,  512, 0 ],
+                        rotation: [ Math.PI / 2, 0, Math.PI ]
+                    },
+                    {
+                        //下
+                        url: './img/c/c_cube_5.png',
+                        position: [ 0, -512, 0 ],
+                        rotation: [ - Math.PI / 2, 0, Math.PI ]
+                    }
+                ];
+
+                //将6个面加进空间中
+                for ( var i = 0; i < sides.length; i ++ ) {
+
+                    var side = sides[ i ];
+                    //创建盒子，创建图片
+                    //指定唯一的id名
+                    var element = document.createElement( 'div' );
+                    element.id = "boxDiv" + i;
+                    element.style.width = "1026px"; // 2 pixels extra to close the gap.
+                    element.style.height = "1026px"; // 2 pixels extra to close the gap.
+                    element.style.background = "url("+side.url+")";
+                    element.style.backgroundSize = "100% 100%";
+
+                    var num = Math.floor(Math.random()*15+1);
+                    var img = document.createElement( 'img' );
+                    img.id = "imgBtn"+i;
+                    img.className = "btn";
+                    img.src = "./img/t/"+num+".png";
+                    img.setAttribute("index",num);
+                    img.width = 100;
+                    img.style.borderRadius = "200px";
+                    img.style.marginTop = "50%";
+                    img.style.marginLeft = "50%";
+
+                    element.style.position = "relative";
+                    // element.style.top = "-100px";
+                    // element.style.left = "-100px";
+                    element.appendChild(img);
+                    
+                    //创建3D对象
+                    var object = new THREE.CSS3DObject( element );
+                    //定位旋转
+                    object.position.fromArray(side.position), 
+                    object.rotation.fromArray(side.rotation)
+                    //将盒子装进空间中
+                    scene.add( object );
+                }
+
+                //设置渲染器
+                renderer = new THREE.CSS3DRenderer();
+                //设置渲染器大小
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                //将渲染器添加入页面
+                document.body.appendChild( renderer.domElement );
+
+                //陀螺仪控件
+                device = new DeviceOrientationController(camera,renderer.domElement);
+                device.connect();
+
+                device.deviceOrientationManual = !!0;
+
+                setTimeout(function  () {
+                    addDom();
+                },300)
+            }
+            
+            
+            //重复调用函数
+            function animate() {
+
+                device.update()
+                //告诉renderer用我们提供的相机来渲染scene
+                renderer.render( scene, camera );
+                requestAnimationFrame( animate );
+
+            }
+
+
+
+            //点击是否开启陀螺仪，不开启时默认为拖拽
+            function change () {
+                device.deviceOrientationManual = !device.deviceOrientationManual;
+                if (document.getElementById('button').innerHTML == "开启") {
+                    document.getElementById('button').innerHTML = "关闭"
+                }else{
+                    document.getElementById('button').innerHTML = "开启"
+                };
+            }
+            //点击显示事件
+            document.addEventListener("touchstart",function  (ev) {
+                var ev = ev || window.event;
+                var target = ev.target || ev.srcElement;
+
+                if(target.className.indexOf("btn") >= 0){
+                    // alert(target.getAttribute("index"))
+                    document.getElementById('alert').src = "./img/t/"+target.getAttribute("index")+"q.png";
+                    document.getElementById('alert').className = "alert show";
+
+                };
+            })
+            //点击隐藏事件
+            document.getElementById('alert').addEventListener("touchstart",function  (ev) {
+                document.getElementById('alert').className = "alert";
+            })
+            //弹出对应图片
+            function addDom () {
+                for (var i = 0; i < 4; i++) {
+                    var img = document.createElement( 'img' );
+                        img.className = "car";
+                        img.src = "./img/car"+(i+1)+".gif";
+                        img.width = 300;
+                    document.getElementById('boxDiv'+ i).appendChild(img)
+                };
+            }
+
+        </script>
+    </body>
+</html>

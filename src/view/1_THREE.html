@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <title>three.js css3d - panorama</title>
+    </head>
+    <body>
+        <div id="WebGL-output"></div>
+        <div id="Stats-output"></div>
+        <script type="text/javascript" src="./js/three.js"></script>
+         <!-- 监控控件 -->
+        <script src="./js/stats.js"></script>
+        <!-- 界面组件 -->
+        <script src="./js/dat.gui.js"></script>
+        <!-- 轨道控件 -->
+        <script src="./js/OrbitControls.js"></script>
+        <script>
+        window.onload = function  () {
+
+            /*
+            定义一个场景
+            变量scene是一个容器，用来保存跟踪我们想渲染的物体
+            */
+            var scene = new THREE.Scene();
+            /*
+            定义相机
+            变量camera定义了我们能够在渲染好的scene里看到什么
+            */
+            var camera = new THREE.PerspectiveCamera(45,window.innerWidth / window.innerHeight,0.1,1000);
+            /*
+            定义渲染器
+            renderer对象负责计算指定相机角度下我们在浏览器里看到scene的样子
+            */
+            var renderer = new THREE.WebGLRenderer();
+            /*
+            定义画布的颜色
+            */
+            renderer.setClearColor(0xEEEEEE);
+            /*
+            画布大小
+            */
+            renderer.setSize(window.innerWidth,window.innerHeight);
+            /*
+            开启影子
+            */
+            // renderer.shadowMapEnabled = true;
+
+
+            /*
+            创建坐标轴并添加到场景中
+            */
+            // var axes = new THREE.AxisHelper(20);
+            // scene.add(axes);
+
+            /*
+            创建一个面设置了宽、高、
+            */
+            // var planeGeometry = new THREE.PlaneGeometry(60,20);
+            /*
+            设置材质：MeshBasicMaterial：网格的基本材料（基础材质）、MeshLambertMaterial：网兰伯特材料（不透明材质）
+            */
+            // var planeMaterial = new THREE.MeshLambertMaterial({
+            // var planeMaterial = new THREE.MeshBasicMaterial({
+                // color : 0xffffff
+            // })
+            /*
+            合成完成平面
+            */
+            // var plane = new THREE.Mesh(planeGeometry,planeMaterial);
+            /*
+            给平面设置位置及旋转
+            */
+            // plane.rotation.x = -0.5*Math.PI;
+            // plane.position.x = 15;
+            // plane.position.y = 0;
+            // plane.position.z = 0;
+            /*
+            给平面设置支持投影
+            */
+            // plane.receiveShadow = !0;
+            /*
+            添加平面到场景中
+            */
+            // scene.add(plane);
+
+            /*
+            方形
+            */
+            // var cubeGeometry = new THREE.CubeGeometry(4,4,4);
+
+            // var cubeMaterial = new THREE.MeshLambertMaterial({
+            // var cubeMaterial = new THREE.MeshBasicMaterial({
+                // color : 0xff0000,
+                // wireframe: true
+            // })
+
+            // var cube = new THREE.Mesh(cubeGeometry,cubeMaterial);
+
+            // cube.position.x = -4;
+            // cube.position.y = 3;
+            // cube.position.z = 0;
+            // cube.castShadow = true;
+            // scene.add(cube);
+
+            /*
+            球
+            */
+            // var sphereGeometry = new THREE.SphereGeometry(4,20,20);
+
+            // var sphereMaterial = new THREE.MeshLambertMaterial({
+            // var sphereMaterial = new THREE.MeshBasicMaterial({
+                // color : 0x77777ff,
+                // wireframe: true
+            // })
+
+            // var sphere = new THREE.Mesh(sphereGeometry,sphereMaterial);
+
+            // sphere.position.x = 20;
+            // sphere.position.y = 4;
+            // sphere.position.z = 2;
+            // sphere.castShadow = true;
+            // scene.add(sphere);
+
+            /*
+            规定相机悬挂的位置
+            */
+            // camera.position.x = -20;
+            // camera.position.y = 40;
+            // camera.position.z = 30;
+            /*
+            往哪看，默认0，0，0
+            */
+            // console.log(scene.position)
+            // camera.lookAt(scene.position);
+
+            /*
+            创建一个光源并定义其发光位置
+            */
+            // var spotLight = new THREE.SpotLight(0xffffff);
+            // spotLight.position.set(-40,60,-40);
+            /*
+            开启阴影并添加光源
+            */
+            // spotLight.castShadow =true;
+            // scene.add(spotLight);
+
+            /*
+            把渲染器添加到页面中renderer.domElement即为节点对象
+            */
+            // document.getElementById('WebGL-output').appendChild(renderer.domElement);
+                
+                //指定场景用该渲染器渲染并使用指定镜头
+                // renderer.render(scene,camera);
+        }
+            
+        </script>
+    </body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <title>three.js css3d - panorama</title>
+    </head>
+    <body>
+        <div id="WebGL-output"></div>
+        <script type="text/javascript" src="./js/three.js"></script>
+        <!-- 导入控件 -->
+        <script src="./js/OBJLoader.js"></script>
+        <!-- 基于OBJLoader的控件用于合成mtl -->
+        <script type="text/javascript" src="./js/MTLLoader.js"></script>
+        <script type="text/javascript" src="./js/OBJMTLLoader.js"></script>
+
+        <script src="./js/OrbitControls.js"></script>
+
+        <script>
+        window.onload = function  () {
+            /*
+            定义一个场景
+            变量scene是一个容器，用来保存跟踪我们想渲染的物体
+            */
+            var scene = new THREE.Scene();
+            /*
+            定义相机
+            变量camera定义了我们能够在渲染好的scene里看到什么
+            */
+            var camera = new THREE.PerspectiveCamera(45,window.innerWidth / window.innerHeight,0.1,1000);
+            var orbitControls = new THREE.OrbitControls(camera);
+            /*
+            定义渲染器
+            renderer对象负责计算指定相机角度下我们在浏览器里看到scene的样子
+            */
+            var renderer = new THREE.WebGLRenderer();
+            /*
+            定义画布的颜色
+            */
+            renderer.setClearColor(0x000000);
+            /*
+            画布大小
+            */
+            renderer.setSize(window.innerWidth,window.innerHeight);
+            /*
+            开启影子
+            */
+            // renderer.shadowMapEnabled = true;
+
+
+            /*
+            创建坐标轴并添加到场景中
+            */
+            var axes = new THREE.AxisHelper(20);
+            scene.add(axes);
+
+            /*
+            规定相机悬挂的位置
+            */
+            camera.position.x = -20;
+            camera.position.y = 40;
+            camera.position.z = 30;
+            /*
+            往哪看，默认0，0，0
+            */
+            camera.lookAt(scene.position);
+
+            /*
+            创建一个光源并定义其发光位置
+            */
+            var spotLight = new THREE.SpotLight(0xffffff);
+            spotLight.position.set(-40,60,-40);
+            /*
+            开启阴影并添加光源
+            */
+            spotLight.castShadow =true;
+            scene.add(spotLight);
+            /*
+            把渲染器添加到页面中renderer.domElement即为节点对象
+            */
+            document.getElementById('WebGL-output').appendChild(renderer.domElement);
+
+            
+            //指定场景用该渲染器渲染并使用指定镜头
+            render()
+
+
+            /*
+            创建3D对象，加载了obj与mtl
+            */
+            var loader = new THREE.OBJMTLLoader();
+
+            loader.load('./models/pinecone.obj', './models/pinecone.mtl', function (object) {
+
+                //若mtl样式中有不符合自己要求的样式那就找到该层并去改变那个属性
+                console.log(object)
+                object.scale.set(80, 80, 80);
+                scene.add(object);
+            });
+
+            function render () {
+                orbitControls.update();
+                //重复调用
+                requestAnimationFrame(render);
+                // setTimeout(render,2)
+                //指定场景用该渲染器渲染并使用指定镜头
+                renderer.render(scene,camera);
+            }
+
+        }
+            
+        </script>
+    </body>
+</html>

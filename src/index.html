@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>THREE</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="email=no">
+    <style>
+        button{display: block;margin: 20px;background: #ccc;border-radius: 10px;box-shadow: 5px 5px 5px;}
+        h2{margin: 20px;}
+    </style>
+</head>
+<body>
+    <h2>我的第一个三维场景</h2>
+    <button id="1_THREE">1：场景、相机、渲染器</button>
+    <button id="2_THREE">2：关于动画与组件</button>
+    <button id="3_THREE">3：关于控件</button>
+
+    <h2>控件的高级应用</h2>
+    <button id="4_THREE">4：加载高级网格几何体</button>
+    <button id="5_THREE">5：创建动画和移动的相机</button>
+
+    <h2>THREEJS与VR</h2>
+    <button id="6_THREE">6：关于全景呈现</button>
+    <button id="7_THREE">7：关于陀螺仪</button>
+    <button id="8_THREE">8：THREE与我们的团队</button>
+    <script>
+    var btn = document.getElementsByTagName('button');
+    for (var i = 0; i < btn.length; i++) {
+        btn[i].onclick = function  () {
+            if (this.id == "8_THREE") {
+                location.href = "./view/8_THREE/index.html";
+            }else{
+                location.href = "./view/" + this.id + ".html";
+            };
+        }
+    };
+    </script>
+</body>
+<html>

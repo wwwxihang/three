@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="format-detection" content="email=no">
+        <title>three.js css3d</title>
+        <style>
+            body {
+                background-color: #000000;
+                margin: 0;
+                padding: 0;
+                line-height: 0;
+                cursor: move;
+                overflow: hidden;
+            }
+
+            a {
+                color: #ffffff;
+            }
+
+            #info {
+                position: absolute;
+                width: 100%;
+                color: #ffffff;
+                padding: 5px;
+                font-family: Monospace;
+                font-size: 13px;
+                font-weight: bold;
+                text-align: center;
+                z-index: 1;
+                
+            }
+            .alert{
+                position: fixed;
+                width: 90%;
+                z-index: 100;
+                left: 0;
+                right: 0;
+                margin: 200% auto;
+                opacity: 0;
+                transition: 2s;
+                -moz-transition: 2s; /* Firefox 4 */
+                -webkit-transition: 2s; /* Safari 和 Chrome */
+                -o-transition: 2s; /* Opera */
+            }
+            .alert.show{
+                margin: 20% auto;
+                opacity:1;
+            }
+        </style>
+    </head>
+    <body>
+        <script src="./js/three.min.56.js"></script>
+        <script src="./js/CSS3DRenderer.js"></script>
+
+        <script>
+
+            var camera, scene, renderer;
+            var target = new THREE.Vector3();
+
+            var lon = 90, lat = 0;
+            var phi = 0, theta = 0;
+
+            var touchX, touchY;
+
+            init();
+            animate();
+
+            function init() {
+                //相机
+                camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight, 1, 1000 );
+                //设置场景
+                scene = new THREE.Scene();
+
+                var sides = [
+                        //1
+                    {
+                        url: './img/c/c_cube_0.png',
+                        position: new THREE.Vector3( 512, 0, 0 ),
+                        rotation: new THREE.Vector3( 0, -Math.PI / 2, 0 )
+                    },
+                        //2
+                    {
+                        url: './img/c/c_cube_1.png',
+                        position: new THREE.Vector3( 0, 0,  512 ),
+                        rotation: new THREE.Vector3( 0, Math.PI, 0 )
+                    },
+                        //3
+                    {
+                        url: './img/c/c_cube_2.png',
+                        position: new THREE.Vector3( -512, 0, 0 ),
+                        rotation: new THREE.Vector3( 0, Math.PI / 2, 0 )
+                    },
+                        //4
+                    {
+                        url: './img/c/c_cube_3.png',
+                        position: new THREE.Vector3( 0, 0, -512 ),
+                        rotation: new THREE.Vector3( 0, 0, 0 )
+                    },
+                    {
+                        //上
+                        url: './img/c/c_cube_4.png',
+                        position: new THREE.Vector3( 0,  512, 0 ),
+                        rotation: new THREE.Vector3( Math.PI / 2, 0, Math.PI )
+                    },
+                    {
+                        //下
+                        url: './img/c/c_cube_5.png',
+                        position: new THREE.Vector3( 0, -512, 0 ),
+                        rotation: new THREE.Vector3( - Math.PI / 2, 0, Math.PI )
+                    }
+                ];
+
+                //将6个面加进空间中
+                for ( var i = 0; i < sides.length; i ++ ) {
+
+                    var side = sides[ i ];
+                    //创建盒子，创建图片
+                    //指定唯一的id名
+                    var element = document.createElement( 'div' );
+                    element.id = "boxDiv" + i;
+                    element.style.width = "1026px"; // 2 pixels extra to close the gap.
+                    element.style.height = "1026px"; // 2 pixels extra to close the gap.
+                    element.style.background = "url("+side.url+")";
+                    element.style.backgroundSize = "100% 100%";
+                    element.style.position = "relative";
+                    
+                    //创建3D对象
+                    var object = new THREE.CSS3DObject( element );
+                    //定位旋转
+                    object.position = side.position;
+                    object.rotation = side.rotation;
+                    //将盒子装进空间中
+                    scene.add( object );
+                }
+
+                //设置渲染器
+                renderer = new THREE.CSS3DRenderer();
+                //设置渲染器大小
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                //将渲染器添加入页面
+                document.body.appendChild( renderer.domElement );
+
+                //添加事件
+                document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+                document.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
+                //添加事件
+                document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+                document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+
+                //页面改变大小
+                window.addEventListener( 'resize', onWindowResize, false );
+
+            }
+            //页面改变大小
+            function onWindowResize() {
+
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+
+                renderer.setSize( window.innerWidth, window.innerHeight );
+
+            }
+            
+            function onDocumentMouseDown( event ) {
+
+                event.preventDefault();
+
+                document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+                document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+
+            }
+
+            function onDocumentMouseMove( event ) {
+
+                var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+                var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+
+                lon -= movementX * 0.1;
+                lat += movementY * 0.1;
+
+            }
+
+            function onDocumentMouseUp( event ) {
+
+                document.removeEventListener( 'mousemove', onDocumentMouseMove );
+                document.removeEventListener( 'mouseup', onDocumentMouseUp );
+
+            }
+
+            function onDocumentMouseWheel( event ) {
+
+                camera.fov -= event.wheelDeltaY * 0.05;
+                camera.updateProjectionMatrix();
+
+            }
+
+            function onDocumentTouchStart( event ) {
+
+                event.preventDefault();
+
+                var touch = event.touches[ 0 ];
+
+                touchX = touch.screenX;
+                touchY = touch.screenY;
+
+            }
+
+            function onDocumentTouchMove( event ) {
+
+                event.preventDefault();
+
+                var touch = event.touches[ 0 ];
+
+                lon -= ( touch.screenX - touchX ) * 0.1;
+                lat += ( touch.screenY - touchY ) * 0.1;
+
+                touchX = touch.screenX;
+                touchY = touch.screenY;
+
+            }
+
+            function animate() {
+
+                requestAnimationFrame( animate );
+
+                lon +=  0.1;
+                lat = Math.max( - 85, Math.min( 85, lat ) );
+                phi = THREE.Math.degToRad( 90 - lat );
+                theta = THREE.Math.degToRad( lon );
+
+                //正玄值
+                target.x = Math.sin( phi ) * Math.cos( theta );
+                target.y = Math.cos( phi );
+                // target.y = target.y > 0.1 ? 0.1 : target.y;
+                // target.y = target.y < -0.1 ? -0.1 : target.y;
+                console.log(target.y)
+                target.z = Math.sin( phi ) * Math.sin( theta );
+
+                //指定场景的中心
+                camera.lookAt( target );
+                //告诉renderer用我们提供的相机来渲染scene
+                renderer.render( scene, camera );
+
+            }
+
+
+        </script>
+    </body>
+</html>
